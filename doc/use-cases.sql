@@ -30,7 +30,7 @@ select
   where
         ao.item_id="$item_id"
   group by
-        ab.id
+        ab.offer_id
   having 
         bid_count = 1
   order by 
