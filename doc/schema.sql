@@ -31,8 +31,22 @@ create table if not exists auction_item (
 ) engine=InnoDB default charset=utf8;
 
 
-
 -- automatic tables
+
+create table if not exists auction_bidder (
+  id integer unsigned not null auto_increment,
+  campaign_code varchar(64) not null,
+  msisdn varchar(32) not null,
+  credits integer unsigned not null default 0,
+  created datetime,
+  last_modified timestamp,
+  primary key (id),
+  constraint foreign key (campaign_code) references auction_campaign (code) on update cascade,
+  unique key (campaign_code, msisdn),
+  index (campaign_code, msisdn)
+) engine=InnoDB default charset=utf8;
+
+
 
 create table if not exists auction_offer (
   id integer unsigned not null auto_increment,

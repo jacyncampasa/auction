@@ -1,11 +1,10 @@
 package WyrlsX::Auction::BidAmount;
 use strict;
 use Moose;
-use Math;
 
 has 'input'          => ( isa => 'Str', is => 'rw', required => 1, );
 has 'minimum'        => ( isa => 'Int', is => 'rw', required => 1, );
-has 'maximum'        => ( isa => 'Int', is => 'rw', required => 1, );
+has 'maximum'        => ( isa => 'Int', is => 'rw', required => 0, );
 has 'clean_input'    => ( isa => 'Str', is => 'ro', required => 0, writer => '_set_clean_input', reader => '_get_clean_input', );
 
 
@@ -17,11 +16,12 @@ sub is_valid {
     $clean_amount =~ s/^\s+//g;
     $clean_amount =~ s/\s+$//g;
 
-    if ($clean_amount !~ m/^\d+(|\,\d+)(|\.|\.(\d{1}|\d{2}))$/) {
+    if ($clean_amount !~ m/^[,\d]+(\.)?(\d{1,2})?$/) {
+    #if ($clean_amount !~ m/^\d+(|\,\d+)(|\.|\.(\d{1}|\d{2}))$/) {
         return 0;
     }
 
-    $clean_amount =~ s/,//;
+    $clean_amount =~ s/,//g;
     $self->_set_clean_input(sprintf("%.2f", $clean_amount));
 
     return 1;
@@ -38,7 +38,7 @@ sub get_error {
 
     if (defined($self->_get_clean_input)) {
         return INVALID_LT_MINIMUM() if ($self->_get_clean_input < $self->minimum);
-        return INVALID_GT_MAXIMUM() if ($self->_get_clean_input > $self->maximum);
+        return INVALID_GT_MAXIMUM() if ($self->maximum && $self->_get_clean_input > $self->maximum);
     }
 
     return undef;

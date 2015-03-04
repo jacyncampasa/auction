@@ -26,7 +26,8 @@ my $TEST_CASES = [
   ["1 2", 0, undef, WyrlsX::Auction::BidAmount::INVALID_FORMAT],
   ["1.2.4.5", "0", undef, WyrlsX::Auction::BidAmount::INVALID_FORMAT],
   ["0.10", 1, "0.10", WyrlsX::Auction::BidAmount::INVALID_LT_MINIMUM],
-  ["500,000.25", 1, "500000.25", WyrlsX::Auction::BidAmount::INVALID_GT_MAXIMUM],
+  #["500,000.25", 1, "500000.25", WyrlsX::Auction::BidAmount::INVALID_GT_MAXIMUM],
+  ["5,000,000.25", 1, "5000000.25", undef],
 ];
 
 
@@ -34,7 +35,7 @@ my $TEST_CASES = [
 my $CLASS = "WyrlsX::Auction::BidAmount";
 {
   foreach my $tc (@$TEST_CASES) {
-    my $o = $CLASS->new( input => $tc->[0], minimum => 1, maximum => 500000, );
+    my $o = $CLASS->new( input => $tc->[0], minimum => 1, );
     is $o->is_valid(), $tc->[1];
     is $o->get_error, $tc->[3];
     is $o->_get_clean_input, $tc->[2], "clean_amount => " . $tc->[2];
