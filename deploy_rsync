@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+usage="Usage: $0 <account@server>"
+dest=${1:?$usage}
+
+rsync --rsh=ssh -Cavz --exclude '*.swp' \
+    . \
+    $dest:opt/wyrls-auction
