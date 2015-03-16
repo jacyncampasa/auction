@@ -86,7 +86,7 @@ sub processcmd {
     my ($cmdtxt, $bid_amount) = (undef, 0);
 
     if ($info eq WyrlsX::Auction::Info::STATUS) {
-        $bid_amount = $AuctionInfo->get_lowest_unique_bid($cmd{origin});
+        $bid_amount = $AuctionInfo->get_lowest_unique_bid($cmd{origin}, 5);
 
         $cmsgtype = "Status";
         $cmsgtype .= "-NoUBid" if (not $bid_amount);

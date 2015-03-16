@@ -20,7 +20,7 @@ my $TEST_CASES = [
   ["12PHP", 1, "12.00", undef],
   ["(12)", 1, "12.00", undef],
   ["( 12 )", 1, "12.00", undef],
-  ["( 12 )", 1, "12.00", undef],
+  ["( 12)", 1, "12.00", undef],
   ["1,200", 1, "1200.00", undef],
   ["1.2", 1, "1.20", undef],
   ["1 2", 0, undef, WyrlsX::Auction::BidAmount::INVALID_FORMAT],
@@ -30,6 +30,10 @@ my $TEST_CASES = [
   ["5,000,000.25", 1, "5000000.25", undef],
 ];
 
+  foreach my $tc (@$TEST_CASES) {
+      print $tc->[0], "\n";
+  }
+exit;
 
 
 my $CLASS = "WyrlsX::Auction::BidAmount";

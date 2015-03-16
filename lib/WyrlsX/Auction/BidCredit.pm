@@ -21,12 +21,12 @@ sub BUILD {
 
     $sth_dec_credit   = $self->DBH->prepare("INSERT INTO auction_bidder (campaign_code, msisdn, credits, created) 
                                                 VALUES ('" . $self->campaign_code . "', ?, 0, NOW()) 
-                                                ON DUPLICATE KEY UPDATE credits=IF(credits>0, credits-1, 0);")
+                                                ON DUPLICATE KEY UPDATE credits=IF(credits>0, credits-?, 0);")
                                                 or die "$0: FATAL: prepare failed\n";
 
     $sth_inc_credit   = $self->DBH->prepare("INSERT INTO auction_bidder (campaign_code, msisdn, credits, created) 
                                                 VALUES ('" . $self->campaign_code . "', ?, 1, NOW()) 
-                                                ON DUPLICATE KEY UPDATE credits=credits+1;")
+                                                ON DUPLICATE KEY UPDATE credits=credits+?;")
                                                 or die "$0: FATAL: prepare failed\n";
 }
 
@@ -49,9 +49,10 @@ sub has_credit {
 }
 
 sub dec_credit {
-    my ($self, $msisdn) = @_;
+    my ($self, $msisdn, $credit) = @_;
+    $credit = 1 if (not defined($credit));
 
-    my $result = $sth_dec_credit->execute( $msisdn ) or die "$0: dec_credit() FATAL: Unable to execute query\n";
+    my $result = $sth_dec_credit->execute( $msisdn, $credit ) or die "$0: dec_credit() FATAL: Unable to execute query\n";
     if ($result eq '0E0') {
         return 0;
     } else {
@@ -63,9 +64,10 @@ sub dec_credit {
 }
 
 sub inc_credit {
-    my ($self, $msisdn) = @_;
+    my ($self, $msisdn, $credit) = @_;
+    $credit = 1 if (not defined($credit));
 
-    my $result = $sth_inc_credit->execute( $msisdn ) or die "$0: inc_credit() FATAL: Unable to execute query\n";
+    my $result = $sth_inc_credit->execute( $msisdn, $credit ) or die "$0: inc_credit() FATAL: Unable to execute query\n";
     if ($result eq '0E0') {
         return 0;
     } else {

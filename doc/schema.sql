@@ -51,7 +51,7 @@ create table if not exists auction_bidder (
 create table if not exists auction_offer (
   id integer unsigned not null auto_increment,
   item_id integer unsigned not null,
-  offer_amount decimal(9,2) not null,
+  offer_amount decimal(65,2) not null,
   created datetime,
   last_modified timestamp,
   primary key (id),

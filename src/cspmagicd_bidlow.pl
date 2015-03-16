@@ -431,6 +431,9 @@ sub message_logic {
 
                             #TODO: First Time To Promo in this Service..
                             if ($promo_service_cap == 0) {
+
+                                die "Failed to Add Free Credits" if (not $bid_credit->inc_credit($msg_origin, 1));
+
                                 # Auto on on Bid Alert
                                 $p_cmd{cmd} = "scriptmenu";
                                 $p_cmd{txt} = "BIDALERT AUTOON";

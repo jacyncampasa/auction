@@ -29,11 +29,11 @@ sub BUILD {
 
     $sth_get_msisdn_lowest_unique_bid = $self->DBH->prepare("SELECT msisdn, ao.offer_amount as bid_amount, count(ab.id) as bid_count 
                                                         FROM auction_offer AS ao INNER JOIN auction_bid AS ab ON (ao.id=ab.offer_id)
-                                                        WHERE ao.item_id = ? AND ab.msisdn = ?
+                                                        WHERE ao.item_id = ?
                                                         GROUP BY ab.offer_id
-                                                        HAVING bid_count = 1
+                                                        HAVING bid_count = 1 AND ab.msisdn = ?
                                                         ORDER BY bid_amount ASC
-                                                        LIMIT 5;")
+                                                        LIMIT ?;")
                                                         or die "$0: FATAL: prepare failed\n";
 
 }
@@ -56,11 +56,12 @@ sub has_item {
 }
 
 sub get_lowest_unique_bid {
-    my ($self, $msisdn) = @_;
+    my ($self, $msisdn, $limit) = @_;
+    $limit = 1 if (!defined($limit));
 
     my ($result, $data);
     if (defined($msisdn)) {
-        $result = $sth_get_msisdn_lowest_unique_bid->execute( $self->_get_item->{id}, $msisdn ) or die "$0: get_msisdn_lowest_unique_bid() FATAL: Unable to execute query\n";
+        $result = $sth_get_msisdn_lowest_unique_bid->execute( $self->_get_item->{id}, $msisdn, $limit ) or die "$0: get_msisdn_lowest_unique_bid() FATAL: Unable to execute query\n";
         $data = $sth_get_msisdn_lowest_unique_bid->fetchall_hashref('bid_amount') or die "$0: get_msisdn_lowest_unique_bid() FATAL: fetchrow_hashref query failed\n";
     } 
     else {
@@ -72,7 +73,7 @@ sub get_lowest_unique_bid {
         return 0;
     } else {
         my $bid_amount = '';
-        foreach my $row (keys%$data) {
+        foreach my $row (sort keys%$data) {
             $bid_amount .= "P" . $data->{$row}->{bid_amount} . ">>";
         }
         return $bid_amount;
